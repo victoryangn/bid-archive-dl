@@ -1,0 +1,35 @@
+name: bid-download
+on:
+  workflow_dispatch:
+    inputs:
+      shard_count:
+        description: "分片总数"
+        default: "12"
+        required: true
+
+jobs:
+  download:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      max-parallel: 12
+      matrix:
+        shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Download shard ${{ matrix.shard }}
+        run: python runner_dl.py ${{ matrix.shard }} ${{ inputs.shard_count || 12 }}
+      - name: Upload
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bids-shard-${{ matrix.shard }}
+          path: |
+            out/
+            manifest_shard*.json
+            failed_shard*.txt
+          retention-days: 2
+          compression-level: 0

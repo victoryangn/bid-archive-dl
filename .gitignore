@@ -1,0 +1,13 @@
+.venv/
+.playwright-mcp/
+*.pdf
+20*/
+unknown/
+download_log.txt
+scan_log.txt
+cdx_log.txt
+manifest.json
+failed.txt
+.guard_orig_node
+.throttle_until
+__pycache__/
