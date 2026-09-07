@@ -1,0 +1,23 @@
+name: probe-army
+on: [workflow_dispatch]
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Probe army.mil.ph from Azure IP
+        run: |
+          echo "=== 1. 首页 ==="
+          curl -s -o /tmp/home.html -w "HTTP %{http_code}, %{size_download}B\n" -m 30 \
+            -A "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36" \
+            "https://army.mil.ph/home/"
+          grep -oE "Sorry, you have been blocked|Attention Required|Philippine Army" /tmp/home.html | head -1 || echo "(无特征文本)"
+          echo "=== 2. 2026 PDF 直下测试 ==="
+          curl -s -o /tmp/test.pdf -w "HTTP %{http_code}, %{size_download}B\n" -m 60 \
+            -A "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36" \
+            "https://army.mil.ph/home/images/2026/ITB/May/ITB_QM_PABAC1_007_26_Combat_Chest_Rig_f9f64c50_e447_445f_affb_d168a7d276b9.pdf"
+          head -c 8 /tmp/test.pdf | xxd | head -1
+          echo "=== 3. 2025 PDF 直下测试 ==="
+          curl -s -o /tmp/t25.pdf -w "HTTP %{http_code}, %{size_download}B\n" -m 60 \
+            -A "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36" \
+            "https://army.mil.ph/home/images/2025/itb/BD_-_MED_PABAC1_006-25_-_Procurement_of_Medical_Equipment.pdf"
+          head -c 8 /tmp/t25.pdf | xxd | head -1
